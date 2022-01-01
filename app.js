@@ -35,6 +35,7 @@ app.get('/', (req, res) => {
     .catch( error => console.error(error))
 })
 
+// 新增todo頁面
 app.get('/todos/new', (req, res) => {
   return res.render('new')
 })
@@ -48,12 +49,34 @@ app.post('/todos', (req, res) => {
     .catch( error => console.log(error))
 })
 
+// todo詳細頁面
 app.get('/todos/:id', (req, res) => {
   const id = req.params.id
   console.log('222', id)
   return Todo.findById(id)
     .lean()
     .then(todo => res.render('detail', { todo }))
+    .catch(() => console.log(error))
+})
+
+// todo編輯頁面
+app.get('/todos/:id/edit', (req, res) => {
+  const id = req.params.id
+  return Todo.findById(id)
+    .lean()
+    .then(todo => res.render('edit', { todo }))
+    .catch(() => console.log(error))
+})
+
+app.post('/todos/:id/edit', (req, res) => {
+  const id = req.params.id
+  const name = req.body.name
+  return Todo.findById(id)
+    .then(todo => {
+      todo.name = name
+      return todo.save()
+    })
+    .then(() => res.redirect(`/todos/${id}`))
     .catch(() => console.log(error))
 })
 
