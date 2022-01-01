@@ -2,9 +2,8 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
-
+const bodyParser = require('body-parser')
 const Todo = require('./models/todo')
-
 const app = express()
 
 // 設定連線到 mongoDB
@@ -25,12 +24,27 @@ db.once('open', () => {
 app.engine('hbs', exphbs.engine({ defaultLayout: 'main', extname: '.hbs'}))
 app.set('view engine', 'hbs')
 
-// 路由設定
+// 用 app.use 規定每一筆請求都需要透過 body-parser 進行前置處理
+app.use(bodyParser.urlencoded({ extended: true }))
+
 app.get('/', (req, res) => {
   // 取得Todo所有資料
   Todo.find()
     .lean()
     .then( todos => res.render( 'index', { todos } ))
+    .catch( error => console.error(error))
+})
+
+app.get('/todos/new', (req, res) => {
+  return res.render('new')
+})
+
+app.post('/todos', (req, res) => {
+  // 拿出表單裡的資料
+  const name = req.body.name
+  // 呼叫Todo物件直接新增資料
+  return Todo.create({ name })
+    .then(() => res.redirect('/'))
     .catch( error => console.error(error))
 })
 
