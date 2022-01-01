@@ -1,11 +1,13 @@
+// 載入
 const express = require('express')
-// 載入 mongoose
 const mongoose = require('mongoose')
+const exphbs = require('express-handlebars')
 
 const app = express()
 
 // 設定連線到 mongoDB
 mongoose.connect('mongodb://localhost/todo-list', { useNewUrlParser: true, useUnifiedTopology: true })
+
 // 取得資料庫連線狀態
 const db = mongoose.connection
 // 連線異常
@@ -17,8 +19,12 @@ db.once('open', () => {
   console.log('mongodb connercted :)')
 })
 
+// hbs設定
+app.engine('hbs', exphbs.engine({ defaultLayout: 'main', extname: '.hbs'}))
+app.set('view engine', 'hbs')
+
 app.get('/', (req, res) => {
-  res.send('Hello world')
+  res.render('index')
 })
 
 app.listen(3000, () =>{
