@@ -45,7 +45,16 @@ app.post('/todos', (req, res) => {
   // 呼叫Todo物件直接新增資料
   return Todo.create({ name })
     .then(() => res.redirect('/'))
-    .catch( error => console.error(error))
+    .catch( error => console.log(error))
+})
+
+app.get('/todos/:id', (req, res) => {
+  const id = req.params.id
+  console.log('222', id)
+  return Todo.findById(id)
+    .lean()
+    .then(todo => res.render('detail', { todo }))
+    .catch(() => console.log(error))
 })
 
 app.listen(3000, () =>{
