@@ -3,6 +3,8 @@ const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
 
+const Todo = require('./models/todo')
+
 const app = express()
 
 // 設定連線到 mongoDB
@@ -23,8 +25,13 @@ db.once('open', () => {
 app.engine('hbs', exphbs.engine({ defaultLayout: 'main', extname: '.hbs'}))
 app.set('view engine', 'hbs')
 
+// 路由設定
 app.get('/', (req, res) => {
-  res.render('index')
+  // 取得Todo所有資料
+  Todo.find()
+    .lean()
+    .then( todos => res.render( 'index', { todos } ))
+    .catch( error => console.error(error))
 })
 
 app.listen(3000, () =>{
